@@ -5,6 +5,8 @@ import com.rbdip.bookstore.product.ProductRepository;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.rbdip.bookstore.product.ProductService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,16 +17,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OrderService {
 
-    private final ProductRepository productRepository;
+    private final ProductService productService;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final PricingCalculator pricingCalculator = new PricingCalculator();
 
     public OrderService(
-            ProductRepository productRepository,
+            ProductService productService,
             OrderRepository orderRepository,
             OrderItemRepository orderItemRepository) {
-        this.productRepository = productRepository;
+        this.productService = productService;
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
     }
@@ -37,8 +39,7 @@ public class OrderService {
         List<Product> products = new ArrayList<>();
         List<PricingCalculator.LineItem> lineItems = new ArrayList<>();
         for (CreateOrderRequest.Item raw : request.items()) {
-            Product product = productRepository.findById(raw.productId())
-                    .orElseThrow(() -> new IllegalArgumentException("product " + raw.productId() + " not found"));
+            Product product = productService.getProductById(raw.productId());
             int quantity = raw.quantity() == null ? 1 : raw.quantity();
             if (quantity <= 0) {
                 throw new IllegalArgumentException("quantity must be positive");
