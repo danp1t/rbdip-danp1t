@@ -12,4 +12,23 @@ public record CreateOrderRequest(
 
     public record Item(Long productId, Integer quantity) {
     }
+
+    void validateCustomerInfo() {
+        if (this.customerFullName() == null || this.customerFullName().isBlank()) {
+            throw new IllegalArgumentException("customerFullName is required");
+        }
+        if (this.customerAddress() == null || this.customerAddress().isBlank()) {
+            throw new IllegalArgumentException("customerAddress is required");
+        }
+    }
+
+    void validateProductInfo() {
+        if (this.items() == null || this.items().isEmpty()) {
+            throw new IllegalArgumentException("order must contain at least one item");
+        }
+    }
+
+
+
+
 }
