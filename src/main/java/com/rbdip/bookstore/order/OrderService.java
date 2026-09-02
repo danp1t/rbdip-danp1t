@@ -81,4 +81,8 @@ public class OrderService {
         request.validateCustomerInfo();
         request.validateProductInfo();
     }
+
+    public List<Order> getOrders() {
+        return orderRepository.findAll();
+    }
 }
