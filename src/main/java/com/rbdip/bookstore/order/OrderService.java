@@ -38,9 +38,7 @@ public class OrderService {
         List<Product> products = new ArrayList<>();
         List<PricingCalculator.LineItem> lineItems = new ArrayList<>();
         createCheck(products, lineItems, request);
-
-        BigDecimal total = pricingCalculator.calculateOrderTotal(
-                lineItems, request.customerType() == null ? "regular" : request.customerType(), request.couponCode());
+        BigDecimal total = calculatePrice(lineItems, request);
 
         Order order = new Order(
                 request.customerFullName(), request.customerAddress(), request.customerPhone(), "new");
@@ -73,5 +71,11 @@ public class OrderService {
             products.add(product);
             lineItems.add(new PricingCalculator.LineItem(product.getPrice(), quantity));
         }
+    }
+
+    private BigDecimal calculatePrice(List<PricingCalculator.LineItem> lineItems,
+                                      CreateOrderRequest request) {
+        return pricingCalculator.calculateOrderTotal(
+                lineItems, request.customerType() == null ? "regular" : request.customerType(), request.couponCode());
     }
 }
