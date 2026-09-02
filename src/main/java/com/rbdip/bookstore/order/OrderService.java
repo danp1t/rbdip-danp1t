@@ -40,9 +40,7 @@ public class OrderService {
         createCheck(products, lineItems, request);
         BigDecimal total = calculatePrice(lineItems, request);
 
-        Order order = new Order(
-                request.customerFullName(), request.customerAddress(), request.customerPhone(), "new");
-        order = orderRepository.save(order);
+        Order order = saveOrder(request);
 
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
@@ -77,5 +75,11 @@ public class OrderService {
                                       CreateOrderRequest request) {
         return pricingCalculator.calculateOrderTotal(
                 lineItems, request.customerType() == null ? "regular" : request.customerType(), request.couponCode());
+    }
+
+    private Order saveOrder(CreateOrderRequest request) {
+        Order order = new Order(
+                request.customerFullName(), request.customerAddress(), request.customerPhone(), "new");
+        return orderRepository.save(order);
     }
 }
