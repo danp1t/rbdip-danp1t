@@ -40,10 +40,7 @@ public class OrderService {
         List<PricingCalculator.LineItem> lineItems = new ArrayList<>();
         for (CreateOrderRequest.Item raw : request.items()) {
             Product product = productService.getProductById(raw.productId());
-            int quantity = raw.quantity() == null ? 1 : raw.quantity();
-            if (quantity <= 0) {
-                throw new IllegalArgumentException("quantity must be positive");
-            }
+            Integer quantity = request.getQuantity(raw);
             products.add(product);
             lineItems.add(new PricingCalculator.LineItem(product.getPrice(), quantity));
         }

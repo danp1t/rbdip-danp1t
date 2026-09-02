@@ -28,6 +28,14 @@ public record CreateOrderRequest(
         }
     }
 
+    Integer getQuantity(Item item) {
+        int quantity = item.quantity() == null ? 1 : item.quantity();
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("quantity must be positive");
+        }
+        return quantity;
+    }
+
 
 
 
