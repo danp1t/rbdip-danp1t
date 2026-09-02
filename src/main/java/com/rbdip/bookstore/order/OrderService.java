@@ -32,21 +32,17 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(CreateOrderRequest request) {
+        List<Product> products = new ArrayList<>();
+        List<PricingCalculator.LineItem> lineItems = new ArrayList<>();
+
         request.validateCustomerInfo();
         request.validateProductInfo();
 
-        List<Product> products = new ArrayList<>();
-        List<PricingCalculator.LineItem> lineItems = new ArrayList<>();
         createCheck(products, lineItems, request);
         BigDecimal total = calculatePrice(lineItems, request);
 
         Order order = saveOrder(request);
-
-        for (int i = 0; i < products.size(); i++) {
-            Product product = products.get(i);
-            int quantity = lineItems.get(i).quantity();
-            orderItemService.saveOrderItem(order, product, quantity);
-        }
+        saveOrderItems(order, products, lineItems);
 
         sendConfirmationEmail(request.customerFullName(), order.getId(), total);
 
@@ -81,5 +77,15 @@ public class OrderService {
         Order order = new Order(
                 request.customerFullName(), request.customerAddress(), request.customerPhone(), "new");
         return orderRepository.save(order);
+    }
+
+    private void saveOrderItems(Order order,
+                                List<Product> products,
+                                List<PricingCalculator.LineItem> lineItems) {
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            int quantity = lineItems.get(i).quantity();
+            orderItemService.saveOrderItem(order, product, quantity);
+        }
     }
 }
