@@ -37,12 +37,7 @@ public class OrderService {
 
         List<Product> products = new ArrayList<>();
         List<PricingCalculator.LineItem> lineItems = new ArrayList<>();
-        for (CreateOrderRequest.Item raw : request.items()) {
-            Product product = productService.getProductById(raw.productId());
-            Integer quantity = request.getQuantity(raw);
-            products.add(product);
-            lineItems.add(new PricingCalculator.LineItem(product.getPrice(), quantity));
-        }
+        createCheck(products, lineItems, request);
 
         BigDecimal total = pricingCalculator.calculateOrderTotal(
                 lineItems, request.customerType() == null ? "regular" : request.customerType(), request.couponCode());
@@ -67,5 +62,16 @@ public class OrderService {
         // просто эмулируется побочный эффект отправки письма.
         System.out.printf(
                 "[email] Dear %s, your order #%d for %s has been placed.%n", customerName, orderId, total);
+    }
+
+    private void createCheck(List<Product> products,
+                              List<PricingCalculator.LineItem> lineItems,
+                              CreateOrderRequest request) {
+        for (CreateOrderRequest.Item raw : request.items()) {
+            Product product = productService.getProductById(raw.productId());
+            Integer quantity = request.getQuantity(raw);
+            products.add(product);
+            lineItems.add(new PricingCalculator.LineItem(product.getPrice(), quantity));
+        }
     }
 }
