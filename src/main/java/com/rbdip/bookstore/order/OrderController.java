@@ -1,7 +1,11 @@
 package com.rbdip.bookstore.order;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.rbdip.bookstore.product.Product;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,8 +30,15 @@ public class OrderController {
     @PostMapping("/orders")
     @ResponseStatus(HttpStatus.CREATED)
     public Map<String, Object> createOrder(@RequestBody CreateOrderRequest request) {
+        List<Product> products = new ArrayList<>();
+        List<PricingCalculator.LineItem> lineItems = new ArrayList<>();
+
+        orderService.createCheck(products, lineItems, request);
         orderService.validateRequest(request);
-        Order order = orderService.createOrder(request);
+        BigDecimal total = orderService.calculatePrice(lineItems, request);
+        Order order = orderService.createOrder(request, products, lineItems);
+
+        orderService.sendConfirmationEmail(request.customerFullName(), order.getId(), total);
         return Map.of("id", order.getId(), "status", order.getStatus());
     }
 

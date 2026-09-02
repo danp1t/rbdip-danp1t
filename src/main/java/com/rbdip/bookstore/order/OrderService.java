@@ -31,29 +31,21 @@ public class OrderService {
     }
 
     @Transactional
-    public Order createOrder(CreateOrderRequest request) {
-        List<Product> products = new ArrayList<>();
-        List<PricingCalculator.LineItem> lineItems = new ArrayList<>();
-
-        createCheck(products, lineItems, request);
-        BigDecimal total = calculatePrice(lineItems, request);
-
+    public Order createOrder(CreateOrderRequest request, List<Product> products, List<PricingCalculator.LineItem> lineItems) {
         Order order = saveOrder(request);
         saveOrderItems(order, products, lineItems);
-
-        sendConfirmationEmail(request.customerFullName(), order.getId(), total);
 
         return order;
     }
 
-    private void sendConfirmationEmail(String customerName, Long orderId, BigDecimal total) {
+    public void sendConfirmationEmail(String customerName, Long orderId, BigDecimal total) {
         // Реальный почтовый транспорт не настроен в учебном проекте - здесь
         // просто эмулируется побочный эффект отправки письма.
         System.out.printf(
                 "[email] Dear %s, your order #%d for %s has been placed.%n", customerName, orderId, total);
     }
 
-    private void createCheck(List<Product> products,
+    public void createCheck(List<Product> products,
                               List<PricingCalculator.LineItem> lineItems,
                               CreateOrderRequest request) {
         for (CreateOrderRequest.Item raw : request.items()) {
@@ -64,7 +56,7 @@ public class OrderService {
         }
     }
 
-    private BigDecimal calculatePrice(List<PricingCalculator.LineItem> lineItems,
+    public BigDecimal calculatePrice(List<PricingCalculator.LineItem> lineItems,
                                       CreateOrderRequest request) {
         return pricingCalculator.calculateOrderTotal(
                 lineItems, request.customerType() == null ? "regular" : request.customerType(), request.couponCode());
