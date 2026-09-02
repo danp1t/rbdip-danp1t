@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ProductController {
 
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
     @PostMapping("/products")
@@ -25,13 +25,13 @@ public class ProductController {
         String name = (String) body.get("name");
         BigDecimal price = new BigDecimal(body.get("price").toString());
         String description = (String) body.get("description");
-        Product saved = productRepository.save(new Product(name, price, description));
+        Product saved = productService.saveProduct(new Product(name, price, description));
         return Map.of("id", saved.getId(), "name", saved.getName());
     }
 
     @GetMapping("/products")
     public List<Map<String, Object>> listProducts() {
-        return productRepository.findAll().stream()
+        return productService.findAll().stream()
                 .map(p -> Map.<String, Object>of(
                         "id", p.getId(),
                         "name", p.getName(),
