@@ -26,6 +26,7 @@ public class OrderController {
     @PostMapping("/orders")
     @ResponseStatus(HttpStatus.CREATED)
     public Map<String, Object> createOrder(@RequestBody CreateOrderRequest request) {
+        orderService.validateRequest(request);
         Order order = orderService.createOrder(request);
         return Map.of("id", order.getId(), "status", order.getStatus());
     }

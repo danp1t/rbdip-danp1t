@@ -35,9 +35,6 @@ public class OrderService {
         List<Product> products = new ArrayList<>();
         List<PricingCalculator.LineItem> lineItems = new ArrayList<>();
 
-        request.validateCustomerInfo();
-        request.validateProductInfo();
-
         createCheck(products, lineItems, request);
         BigDecimal total = calculatePrice(lineItems, request);
 
@@ -87,5 +84,10 @@ public class OrderService {
             int quantity = lineItems.get(i).quantity();
             orderItemService.saveOrderItem(order, product, quantity);
         }
+    }
+
+    public void validateRequest(CreateOrderRequest request) {
+        request.validateCustomerInfo();
+        request.validateProductInfo();
     }
 }
