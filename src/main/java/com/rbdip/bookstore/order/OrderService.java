@@ -15,19 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class OrderService {
+    private final OrderRepository orderRepository;
 
     private final ProductService productService;
-    private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
+    private final OrderItemService orderItemService;
     private final PricingCalculator pricingCalculator = new PricingCalculator();
 
     public OrderService(
             ProductService productService,
             OrderRepository orderRepository,
-            OrderItemRepository orderItemRepository) {
+            OrderItemService orderItemService) {
         this.productService = productService;
         this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
+        this.orderItemService = orderItemService;
     }
 
     @Transactional
@@ -54,7 +54,7 @@ public class OrderService {
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
             int quantity = lineItems.get(i).quantity();
-            orderItemRepository.save(new OrderItem(order.getId(), product.getName(), product.getPrice(), quantity));
+            orderItemService.saveOrderItem(order, product, quantity);
         }
 
         sendConfirmationEmail(request.customerFullName(), order.getId(), total);
