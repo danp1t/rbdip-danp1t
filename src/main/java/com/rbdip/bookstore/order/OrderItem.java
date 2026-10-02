@@ -3,8 +3,6 @@ package com.rbdip.bookstore.order;
 import com.rbdip.bookstore.product.Product;
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
-
 /**
  * Намеренно денормализовано: дублирует название и цену товара вместо
  * ссылки на products (product_id есть, но name/price скопированы на
