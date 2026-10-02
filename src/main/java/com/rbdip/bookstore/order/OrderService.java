@@ -62,8 +62,7 @@ public class OrderService {
     }
 
     private Order saveOrder(CreateOrderRequest request) {
-        Order order = new Order(
-                request.customerFullName(), request.customerAddress(), request.customerPhone(), "new");
+        Order order = new Order(new Customer(request.customerFullName(), request.customerAddress(), request.customerPhone()), "new");
         return orderRepository.save(order);
     }
 

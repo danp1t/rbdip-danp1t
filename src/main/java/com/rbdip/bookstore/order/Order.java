@@ -1,11 +1,7 @@
 package com.rbdip.bookstore.order;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.Instant;
 
 /**
@@ -22,14 +18,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "customer_full_name", nullable = false)
-    private String customerFullName;
-
-    @Column(name = "customer_address")
-    private String customerAddress;
-
-    @Column(name = "customer_phone")
-    private String customerPhone;
+    @ManyToOne
+    private Customer customer;
 
     @Column(nullable = false)
     private String status;
@@ -41,10 +31,8 @@ public class Order {
         // for JPA
     }
 
-    public Order(String customerFullName, String customerAddress, String customerPhone, String status) {
-        this.customerFullName = customerFullName;
-        this.customerAddress = customerAddress;
-        this.customerPhone = customerPhone;
+    public Order(Customer customer, String status) {
+        this.customer = customer;
         this.status = status;
     }
 
@@ -52,21 +40,11 @@ public class Order {
         return id;
     }
 
-    public String getCustomerFullName() {
-        return customerFullName;
-    }
-
-    public String getCustomerAddress() {
-        return customerAddress;
-    }
-
-    public String getCustomerPhone() {
-        return customerPhone;
-    }
-
     public String getStatus() {
         return status;
     }
+
+    public Customer getCustomer() {return customer;}
 
     public Instant getCreatedAt() {
         return createdAt;

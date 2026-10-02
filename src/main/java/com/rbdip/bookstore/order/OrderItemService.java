@@ -14,7 +14,7 @@ public class OrderItemService {
     }
 
     void saveOrderItem(Order order, Product product, Integer quantity) {
-        orderItemRepository.save(new OrderItem(order.getId(), product.getName(), product.getPrice(), quantity));
+        orderItemRepository.save(new OrderItem(order.getId(), product, quantity));
     }
 
     List<OrderItem> findByOrderId(Long id) {
